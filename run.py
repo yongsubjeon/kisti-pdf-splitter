@@ -313,8 +313,20 @@ def split_pdf(input_pdf, output_folder):
 
     return result_files, None
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def upload_file():
+    return render_template('index.html')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+@app.route('/upload', methods=['POST'])
+def upload():
     if request.method == 'POST':
         file = request.files['file']
         if file and file.filename.endswith('.pdf'):
@@ -326,25 +338,6 @@ def upload_file():
             return redirect(url_for('list_files'))
         else:
             return "유효한 PDF 파일을 업로드해주세요."
-    return '''
-    <!doctype html>
-    <title>PDF 파일 업로드</title>
-    <h1>PDF 파일을 업로드하면 목차에 따라 나누거나 균등하게 분할합니다</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=업로드>
-    </form>
-    <p><a href='/files'>분할된 파일 목록 보기</a></p>
-    <p><a href='/direct_south_korea'>원본 PDF에서 South Korea 페이지 직접 추출</a></p>
-    <p><a href='/direct_market_definition'>원본 PDF에서 Market Definition 페이지 직접 추출</a></p>
-    <p><a href='/direct_executive_summary'>원본 PDF에서 Executive Summary 페이지 직접 추출</a></p>
-    <p><a href='/direct_five_force'>원본 PDF에서 Five Force Analysis 페이지 직접 추출</a></p>
-    <p><a href='/direct_market_overview'>원본 PDF에서 Market Overview 페이지 직접 추출</a></p>
-    <p><a href='/direct_market_share'>원본 PDF에서 Market Share 페이지 직접 추출</a></p>
-    <p style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
-      <a href='/db_extractions' style="font-weight: bold; color: #4CAF50;">데이터베이스에 저장된 추출 데이터 조회</a>
-    </p>
-    '''
 
 @app.route('/files')
 def list_files():
@@ -2320,6 +2313,14 @@ def delete_extraction(extraction_id):
         <p><a href='/db_extractions'>목록으로 돌아가기</a></p>
         <p><a href='/'>메인 페이지로 돌아가기</a></p>
         '''
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

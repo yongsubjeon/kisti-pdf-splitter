@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KISTI PDF 분할 및 섹션 추출 도구</title>
+    
+    <!-- Firebase SDK (compat 버전) - 버전 수정 -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase 설정 스크립트 -->
+    <script>
+    // Firebase 구성
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-UpDOnKQN8n5kXrinjNyHQu7YiNUNt0g",
+      authDomain: "kisti-acd6a.firebaseapp.com",
+      projectId: "kisti-acd6a",
+      storageBucket: "kisti-acd6a.firebasestorage.app",
+      messagingSenderId: "28189232402",
+      appId: "1:28189232402:web:9b302401f88d93a0c7f7cb",
+      measurementId: "G-058J5VQ85Y"
+    };
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    
+    // Firebase 인증 상태 확인
+    firebase.auth().onAuthStateChanged(function(user) {
+      console.log('Firebase 인증 상태:', user ? '로그인됨' : '로그아웃됨');
+    });
+    </script>
+    
+    <!-- FirebaseUI CSS - 버전 수정 -->
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <!-- FirebaseUI JS - 버전 수정 -->
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <h1>KISTI PDF 분할 및 섹션 추출 도구</h1>
+        <div id="user-status">
+            <span id="login-status">로그인되지 않음</span>
+            <button id="logout-button" style="display: none;">로그아웃</button>
+        </div>
+    </header>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 KISTI PDF 분할 및 섹션 추출 도구</p>
+    </footer>
+    
+    <!-- UI 스크립트 -->
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="register-container">
+        <h2>회원가입</h2>
+        <p>PDF 파일 분할 및 추출 도구 이용을 위한 계정을 만드세요.</p>
+        
+        <!-- 회원가입 폼 -->
+        <div class="auth-form">
+            <div id="email-register-form">
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="email">이메일</label>
+                        <input type="email" id="email" class="form-control" placeholder="이메일 주소" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" class="form-control" placeholder="비밀번호 (6자 이상)" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">비밀번호 확인</label>
+                        <input type="password" id="confirm-password" class="form-control" placeholder="비밀번호 확인" required minlength="6">
+                    </div>
+                    <button type="submit" id="register-button" class="btn btn-primary">회원가입</button>
+                </form>
+                <div id="register-error" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- 로그인 링크 -->
+        <div class="auth-links">
+            <p>이미 계정이 있으신가요? <a href="/login" class="login-link">로그인</a></p>
+        </div>
+        
+        <!-- 로딩 표시기 -->
+        <div id="loader" class="loader" style="display: none;">
+            <div class="spinner"></div>
+            <p>회원가입 처리 중...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // 회원가입 폼 처리
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('회원가입 페이지 DOM 로드됨');
+    
+    // Firebase 로드 확인
+    if (typeof firebase === 'undefined') {
+      console.error('Firebase 라이브러리를 찾을 수 없습니다.');
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('register-error').textContent = '인증 시스템을 로드할 수 없습니다.';
+      document.getElementById('register-error').style.display = 'block';
+      return;
+    }
+    
+    // 사용자가 이미 로그인되어 있는지 확인
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // 사용자가 이미 로그인되어 있으면 메인 페이지로 리디렉션
+        console.log('이미 로그인된 사용자 발견, 리디렉션 중');
+        window.location.href = '/';
+      }
+    });
+    
+    // 회원가입 폼 제출 처리
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+      registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const registerError = document.getElementById('register-error');
+        const loader = document.getElementById('loader');
+        
+        // 비밀번호 확인
+        if (password !== confirmPassword) {
+          registerError.textContent = '비밀번호가 일치하지 않습니다.';
+          registerError.style.display = 'block';
+          return;
+        }
+        
+        // 비밀번호 길이 검증
+        if (password.length < 6) {
+          registerError.textContent = '비밀번호는 6자 이상이어야 합니다.';
+          registerError.style.display = 'block';
+          return;
+        }
+        
+        // 로딩 표시
+        loader.style.display = 'flex';
+        registerError.style.display = 'none';
+        
+        // Firebase 회원가입 시도
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            // 회원가입 성공
+            console.log('회원가입 성공:', userCredential.user.email);
+            
+            // 세션 저장
+            sessionStorage.setItem('user', JSON.stringify({
+              uid: userCredential.user.uid,
+              email: userCredential.user.email,
+              displayName: userCredential.user.displayName || '사용자'
+            }));
+            
+            // 메인 페이지로 리디렉션
+            window.location.href = '/';
+          })
+          .catch((error) => {
+            // 회원가입 실패
+            loader.style.display = 'none';
+            
+            // 오류 메시지 표시
+            let errorMessage;
+            switch (error.code) {
+              case 'auth/email-already-in-use':
+                errorMessage = '이미 사용 중인 이메일 주소입니다.';
+                break;
+              case 'auth/invalid-email':
+                errorMessage = '유효하지 않은 이메일 형식입니다.';
+                break;
+              case 'auth/weak-password':
+                errorMessage = '비밀번호가 너무 약합니다.';
+                break;
+              default:
+                errorMessage = '회원가입 중 오류가 발생했습니다: ' + error.message;
+            }
+            
+            registerError.textContent = errorMessage;
+            registerError.style.display = 'block';
+            console.error('회원가입 오류:', error);
+          });
+      });
+    }
+  });
+</script>
+{% endblock %} 

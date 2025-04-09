@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="main-container">
+        <h2>PDF 파일 업로드</h2>
+        <p>PDF 파일을 업로드하면 목차에 따라 나누거나 균등하게 분할합니다</p>
+        <form method="post" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
+            <input type="file" name="file">
+            <input type="submit" value="업로드">
+        </form>
+        
+        <div class="links-container">
+            <p><a href="{{ url_for('list_files') }}">분할된 파일 목록 보기</a></p>
+            <p><a href="{{ url_for('direct_south_korea') }}">원본 PDF에서 South Korea 페이지 직접 추출</a></p>
+            <p><a href="{{ url_for('direct_market_definition') }}">원본 PDF에서 Market Definition 페이지 직접 추출</a></p>
+            <p><a href="{{ url_for('direct_executive_summary') }}">원본 PDF에서 Executive Summary 페이지 직접 추출</a></p>
+            <p><a href="{{ url_for('direct_five_force') }}">원본 PDF에서 Five Force Analysis 페이지 직접 추출</a></p>
+            <p><a href="{{ url_for('direct_market_overview') }}">원본 PDF에서 Market Overview 페이지 직접 추출</a></p>
+            <p><a href="{{ url_for('direct_market_share') }}">원본 PDF에서 Market Share 페이지 직접 추출</a></p>
+            <p style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
+                <a href="{{ url_for('db_extractions') }}" style="font-weight: bold; color: #4CAF50;">데이터베이스에 저장된 추출 데이터 조회</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // 메인 페이지에서만 실행되는 스크립트
+  document.addEventListener('DOMContentLoaded', function() {
+    // 사용자 로그인 상태 확인
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) {
+        // 로그인되지 않은 경우 로그인 페이지로 리디렉션
+        window.location.href = '/login';
+      }
+    });
+  });
+</script>
+{% endblock %} 

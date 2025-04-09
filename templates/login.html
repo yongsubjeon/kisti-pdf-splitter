@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="login-container">
+        <h2>로그인</h2>
+        <p>등록된 계정으로 PDF 파일 분할 및 추출 도구를 이용하세요.</p>
+        
+        <!-- 로그인 폼 -->
+        <div class="auth-form">
+            <div id="email-login-form">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">이메일</label>
+                        <input type="email" id="email" class="form-control" placeholder="이메일 주소" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" class="form-control" placeholder="비밀번호" required>
+                    </div>
+                    <button type="submit" id="login-button" class="btn btn-primary">로그인</button>
+                </form>
+                <div id="login-error" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- 회원가입 링크 -->
+        <div class="auth-links">
+            <p>계정이 없으신가요? <a href="/register" class="register-link">회원가입</a></p>
+        </div>
+        
+        <!-- 로딩 표시기 -->
+        <div id="loader" class="loader" style="display: none;">
+            <div class="spinner"></div>
+            <p>로그인 처리 중...</p>
+        </div>
+        
+        <!-- 오류 메시지 영역 -->
+        <div id="error-message" class="error-message" style="display: none;">
+            로그인 시스템 로드 중 오류가 발생했습니다.
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // 로그인 폼 처리
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('로그인 페이지 DOM 로드됨');
+    
+    // Firebase 로드 확인
+    if (typeof firebase === 'undefined') {
+      console.error('Firebase 라이브러리를 찾을 수 없습니다.');
+      document.getElementById('error-message').style.display = 'block';
+      return;
+    }
+    
+    // 사용자가 이미 로그인되어 있는지 확인
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // 사용자가 이미 로그인되어 있으면 메인 페이지로 리디렉션
+        console.log('이미 로그인된 사용자 발견, 리디렉션 중');
+        window.location.href = '/';
+      }
+    });
+    
+    // 로그인 폼 제출 처리
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const loginError = document.getElementById('login-error');
+        const loader = document.getElementById('loader');
+        
+        // 입력값 검증
+        if (!email || !password) {
+          loginError.textContent = '이메일과 비밀번호를 모두 입력해주세요.';
+          loginError.style.display = 'block';
+          return;
+        }
+        
+        // 로딩 표시
+        loader.style.display = 'flex';
+        loginError.style.display = 'none';
+        
+        // Firebase 로그인 시도
+        firebase.auth().signInWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            // 로그인 성공
+            console.log('로그인 성공:', userCredential.user.email);
+            
+            // 세션 저장
+            sessionStorage.setItem('user', JSON.stringify({
+              uid: userCredential.user.uid,
+              email: userCredential.user.email,
+              displayName: userCredential.user.displayName || '사용자'
+            }));
+            
+            // 메인 페이지로 리디렉션
+            window.location.href = '/';
+          })
+          .catch((error) => {
+            // 로그인 실패
+            loader.style.display = 'none';
+            
+            // 오류 메시지 표시
+            let errorMessage;
+            switch (error.code) {
+              case 'auth/user-not-found':
+                errorMessage = '등록되지 않은 이메일입니다.';
+                break;
+              case 'auth/wrong-password':
+                errorMessage = '비밀번호가 일치하지 않습니다.';
+                break;
+              case 'auth/invalid-email':
+                errorMessage = '유효하지 않은 이메일 형식입니다.';
+                break;
+              case 'auth/too-many-requests':
+                errorMessage = '너무 많은 로그인 시도가 있었습니다. 잠시 후 다시 시도해주세요.';
+                break;
+              default:
+                errorMessage = '로그인 중 오류가 발생했습니다: ' + error.message;
+            }
+            
+            loginError.textContent = errorMessage;
+            loginError.style.display = 'block';
+            console.error('로그인 오류:', error);
+          });
+      });
+    }
+  });
+</script>
+{% endblock %} 
