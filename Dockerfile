@@ -20,6 +20,15 @@ COPY . .
 # 필요한 디렉토리 생성
 RUN mkdir -p uploads output_sections merged figures market_dynamics south_korea market_definition market_overview market_share
 
+# Firebase 환경 변수 설정 (Cloud Run에서 실제 값으로 대체)
+ENV FIREBASE_API_KEY=""
+ENV FIREBASE_AUTH_DOMAIN=""
+ENV FIREBASE_PROJECT_ID=""
+ENV FIREBASE_STORAGE_BUCKET=""
+ENV FIREBASE_MESSAGING_SENDER_ID=""
+ENV FIREBASE_APP_ID=""
+ENV FIREBASE_MEASUREMENT_ID=""
+
 # 포트 설정
 ENV PORT 8080
 

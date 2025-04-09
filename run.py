@@ -46,6 +46,15 @@ app.config['MARKET_DEFINITION_FOLDER'] = MARKET_DEFINITION_FOLDER
 app.config['MARKET_OVERVIEW_FOLDER'] = MARKET_OVERVIEW_FOLDER
 app.config['MARKET_SHARE_FOLDER'] = MARKET_SHARE_FOLDER
 
+# Firebase 설정 - 환경 변수에서 가져오기
+app.config['FIREBASE_API_KEY'] = os.environ.get('FIREBASE_API_KEY', '')
+app.config['FIREBASE_AUTH_DOMAIN'] = os.environ.get('FIREBASE_AUTH_DOMAIN', '')
+app.config['FIREBASE_PROJECT_ID'] = os.environ.get('FIREBASE_PROJECT_ID', '')
+app.config['FIREBASE_STORAGE_BUCKET'] = os.environ.get('FIREBASE_STORAGE_BUCKET', '')
+app.config['FIREBASE_MESSAGING_SENDER_ID'] = os.environ.get('FIREBASE_MESSAGING_SENDER_ID', '')
+app.config['FIREBASE_APP_ID'] = os.environ.get('FIREBASE_APP_ID', '')
+app.config['FIREBASE_MEASUREMENT_ID'] = os.environ.get('FIREBASE_MEASUREMENT_ID', '')
+
 # 모든 필요한 폴더 생성
 for folder in [UPLOAD_FOLDER, OUTPUT_FOLDER, MERGED_FOLDER, FIGURE_FOLDER, 
                MARKET_DYNAMICS_FOLDER, SOUTH_KOREA_FOLDER, MARKET_DEFINITION_FOLDER,
@@ -315,15 +324,45 @@ def split_pdf(input_pdf, output_folder):
 
 @app.route('/')
 def upload_file():
-    return render_template('index.html')
+    # Firebase 설정 변수를 템플릿에 전달
+    firebase_config = {
+        'firebase_api_key': app.config['FIREBASE_API_KEY'],
+        'firebase_auth_domain': app.config['FIREBASE_AUTH_DOMAIN'],
+        'firebase_project_id': app.config['FIREBASE_PROJECT_ID'],
+        'firebase_storage_bucket': app.config['FIREBASE_STORAGE_BUCKET'],
+        'firebase_messaging_sender_id': app.config['FIREBASE_MESSAGING_SENDER_ID'],
+        'firebase_app_id': app.config['FIREBASE_APP_ID'],
+        'firebase_measurement_id': app.config['FIREBASE_MEASUREMENT_ID']
+    }
+    return render_template('index.html', **firebase_config)
 
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    # Firebase 설정 변수를 템플릿에 전달
+    firebase_config = {
+        'firebase_api_key': app.config['FIREBASE_API_KEY'],
+        'firebase_auth_domain': app.config['FIREBASE_AUTH_DOMAIN'],
+        'firebase_project_id': app.config['FIREBASE_PROJECT_ID'],
+        'firebase_storage_bucket': app.config['FIREBASE_STORAGE_BUCKET'],
+        'firebase_messaging_sender_id': app.config['FIREBASE_MESSAGING_SENDER_ID'],
+        'firebase_app_id': app.config['FIREBASE_APP_ID'],
+        'firebase_measurement_id': app.config['FIREBASE_MEASUREMENT_ID']
+    }
+    return render_template('login.html', **firebase_config)
 
 @app.route('/register')
 def register():
-    return render_template('register.html')
+    # Firebase 설정 변수를 템플릿에 전달
+    firebase_config = {
+        'firebase_api_key': app.config['FIREBASE_API_KEY'],
+        'firebase_auth_domain': app.config['FIREBASE_AUTH_DOMAIN'],
+        'firebase_project_id': app.config['FIREBASE_PROJECT_ID'],
+        'firebase_storage_bucket': app.config['FIREBASE_STORAGE_BUCKET'],
+        'firebase_messaging_sender_id': app.config['FIREBASE_MESSAGING_SENDER_ID'],
+        'firebase_app_id': app.config['FIREBASE_APP_ID'],
+        'firebase_measurement_id': app.config['FIREBASE_MEASUREMENT_ID']
+    }
+    return render_template('register.html', **firebase_config)
 
 @app.route('/upload', methods=['POST'])
 def upload():

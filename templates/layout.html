@@ -11,15 +11,15 @@
     
     <!-- Firebase 설정 스크립트 -->
     <script>
-    // Firebase 구성
+    // Firebase 구성 - 서버에서 전달된 환경 변수 사용
     const firebaseConfig = {
-      apiKey: "AIzaSyD-UpDOnKQN8n5kXrinjNyHQu7YiNUNt0g",
-      authDomain: "kisti-acd6a.firebaseapp.com",
-      projectId: "kisti-acd6a",
-      storageBucket: "kisti-acd6a.firebasestorage.app",
-      messagingSenderId: "28189232402",
-      appId: "1:28189232402:web:9b302401f88d93a0c7f7cb",
-      measurementId: "G-058J5VQ85Y"
+      apiKey: "{{ firebase_api_key|default('', true) }}",
+      authDomain: "{{ firebase_auth_domain|default('', true) }}",
+      projectId: "{{ firebase_project_id|default('', true) }}",
+      storageBucket: "{{ firebase_storage_bucket|default('', true) }}",
+      messagingSenderId: "{{ firebase_messaging_sender_id|default('', true) }}",
+      appId: "{{ firebase_app_id|default('', true) }}",
+      measurementId: "{{ firebase_measurement_id|default('', true) }}"
     };
 
     // Firebase 초기화
