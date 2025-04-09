@@ -1,0 +1,61 @@
+# Git
+.git/
+.gitignore
+
+# Firebase
+.firebase/
+.firebaserc
+firebase.json
+
+# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Uploaded PDFs and generated files
+uploads/*.pdf
+output_sections/*.pdf
+merged/*.pdf
+figures/*.pdf
+market_dynamics/*.pdf
+south_korea/*.pdf
+market_definition/*.pdf
+market_overview/*.pdf
+market_share/*.pdf
+
+# DB
+*.db
+*.sqlite
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Local environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local 

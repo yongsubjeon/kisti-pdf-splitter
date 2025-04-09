@@ -66,7 +66,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
   } else {
     // 사용자가 로그아웃한 상태
-    console.log("로그인되지 않음");
+    console.log("로그인되지 않음 - 앱 접근 허용");
     
     // 로그아웃 상태 UI 표시
     if (loginStatus) {
@@ -78,7 +78,10 @@ firebase.auth().onAuthStateChanged(function(user) {
       logoutButton.style.display = 'none';
     }
     
-    // 로그인 페이지가 아니면 리디렉션
+    // Firebase 로그인에서 넘어온 경우 자동 리디렉션 제거
+    // 로그인 여부에 관계없이 앱에 접근 허용
+    /*
+    // 기존 리디렉션 코드 주석 처리
     if (window.location.pathname !== '/login') {
       // 일부 공개 페이지는 제외
       const publicPages = ['/login', '/terms', '/privacy'];
@@ -86,6 +89,7 @@ firebase.auth().onAuthStateChanged(function(user) {
         window.location.href = '/login';
       }
     }
+    */
   }
 });
 

@@ -1,0 +1,4 @@
+원본 PDF 파일 '1.Microbiome_Sequencing_Services_Market.pdf'에서 Executive Summary 키워드 검색 디버그 정보:
+
+페이지 38에서 줄바꿈으로 분리된 'EXECUTIVE\nSUMMARY' 발견
+

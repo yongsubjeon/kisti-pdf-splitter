@@ -30,6 +30,8 @@
 <script>
   // 메인 페이지에서만 실행되는 스크립트
   document.addEventListener('DOMContentLoaded', function() {
+    // Firebase 호스팅에서 로그인 후 접근할 수 있도록 리디렉션 제거
+    /*
     // 사용자 로그인 상태 확인
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) {
@@ -37,6 +39,8 @@
         window.location.href = '/login';
       }
     });
+    */
+    console.log("보고서 분할 서비스에 접속했습니다. Firebase 인증 우회 활성화");
   });
 </script>
 {% endblock %} 

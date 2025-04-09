@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KISTI 서비스</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <style>
+      body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 1.5rem;
+      }
+      #app-selector {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 4px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .logo {
+        max-width: 200px;
+        margin-bottom: 20px;
+      }
+      .tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+      }
+      .tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        background-color: #f5f5f5;
+        border-radius: 4px 4px 0 0;
+        margin-right: 2px;
+      }
+      .tab.active {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-bottom: none;
+        font-weight: bold;
+      }
+      .auth-form {
+        display: none;
+      }
+      .auth-form.active {
+        display: block;
+      }
+      .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .btn {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+      }
+      .error-message {
+        color: red;
+        margin-top: 10px;
+        display: none;
+      }
+      .success-message {
+        color: green;
+        margin-top: 10px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>KISTI 서비스</h1>
+      
+      <div class="tabs">
+        <div class="tab active" id="login-tab">로그인</div>
+        <div class="tab" id="register-tab">회원가입</div>
+      </div>
+      
+      <!-- 로그인 폼 -->
+      <div class="auth-form active" id="login-form">
+        <div class="form-group">
+          <label for="login-email">이메일</label>
+          <input type="email" id="login-email" placeholder="이메일 주소">
+        </div>
+        <div class="form-group">
+          <label for="login-password">비밀번호</label>
+          <input type="password" id="login-password" placeholder="비밀번호">
+        </div>
+        <button class="btn" id="login-button">로그인</button>
+        <div class="error-message" id="login-error"></div>
+        
+        <div style="margin: 20px 0; text-align: center;">또는</div>
+        
+        <button class="btn" id="google-login" style="background-color: #fff; color: #757575; border: 1px solid #ddd;">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width: 18px; margin-right: 10px; vertical-align: middle;">
+          Google 계정으로 로그인
+        </button>
+      </div>
+      
+      <!-- 회원가입 폼 -->
+      <div class="auth-form" id="register-form">
+        <div class="form-group">
+          <label for="register-email">이메일</label>
+          <input type="email" id="register-email" placeholder="이메일 주소">
+        </div>
+        <div class="form-group">
+          <label for="register-password">비밀번호</label>
+          <input type="password" id="register-password" placeholder="비밀번호 (6자 이상)">
+        </div>
+        <div class="form-group">
+          <label for="register-confirm-password">비밀번호 확인</label>
+          <input type="password" id="register-confirm-password" placeholder="비밀번호 확인">
+        </div>
+        <button class="btn" id="register-button">회원가입</button>
+        <div class="error-message" id="register-error"></div>
+        <div class="success-message" id="register-success">회원가입이 완료되었습니다. 로그인해주세요.</div>
+      </div>
+      
+      <!-- 앱 선택 드롭다운 (로그인 후 표시) -->
+      <div id="app-selection" style="display: none;">
+        <h2>사용할 서비스를 선택하세요</h2>
+        <select id="app-selector">
+          <option value="https://pdf-splitter-service-[URL-PLACEHOLDER].run.app">보고서 분할 서비스</option>
+          <option value="https://kisti-document-summarizer-934041423437.asia-northeast3.run.app/">보고서 요약 서비스</option>
+          <option value="https://kisti-apis-chatbot-prod-934041423437.asia-northeast3.run.app/">감염병 챗봇</option>
+        </select>
+        <button id="go-to-app" style="margin-top: 10px; padding: 8px 16px;" class="btn">이동하기</button>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+          <button id="logout-button" style="background-color: #f44336;" class="btn">로그아웃</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Firebase 구성
+      const firebaseConfig = {
+        apiKey: "AIzaSyD-UpDOnKQN8n5kXrinjNyHQu7YiNUNt0g",
+        authDomain: "kisti-acd6a.firebaseapp.com",
+        projectId: "kisti-acd6a",
+        storageBucket: "kisti-acd6a.firebasestorage.app",
+        messagingSenderId: "28189232402",
+        appId: "1:28189232402:web:9b302401f88d93a0c7f7cb",
+        measurementId: "G-058J5VQ85Y"
+      };
+
+      // Firebase 초기화
+      firebase.initializeApp(firebaseConfig);
+
+      // 탭 전환 처리
+      const loginTab = document.getElementById('login-tab');
+      const registerTab = document.getElementById('register-tab');
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+
+      loginTab.addEventListener('click', function() {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginForm.classList.add('active');
+        registerForm.classList.remove('active');
+        document.getElementById('register-success').style.display = 'none';
+      });
+
+      registerTab.addEventListener('click', function() {
+        registerTab.classList.add('active');
+        loginTab.classList.remove('active');
+        registerForm.classList.add('active');
+        loginForm.classList.remove('active');
+      });
+
+      // 이메일/비밀번호 로그인
+      document.getElementById('login-button').addEventListener('click', function() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const errorElement = document.getElementById('login-error');
+        
+        errorElement.style.display = 'none';
+        
+        if (!email || !password) {
+          errorElement.textContent = '이메일과 비밀번호를 입력해주세요.';
+          errorElement.style.display = 'block';
+          return;
+        }
+        
+        firebase.auth().signInWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            // 로그인 성공
+            const user = userCredential.user;
+            console.log('로그인 성공:', user.email);
+            
+            // 로그인 폼 숨기고 앱 선택 UI 표시
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+            document.querySelector('.tabs').style.display = 'none';
+            document.getElementById('app-selection').style.display = 'block';
+          })
+          .catch((error) => {
+            console.error('로그인 실패:', error);
+            let errorMessage = '로그인에 실패했습니다.';
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+              errorMessage = '이메일 또는 비밀번호가 올바르지 않습니다.';
+            } else if (error.code === 'auth/too-many-requests') {
+              errorMessage = '너무 많은 시도로 계정이 일시적으로 잠겼습니다. 나중에 다시 시도해주세요.';
+            }
+            errorElement.textContent = errorMessage;
+            errorElement.style.display = 'block';
+          });
+      });
+
+      // 구글 로그인
+      document.getElementById('google-login').addEventListener('click', function() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        
+        firebase.auth().signInWithPopup(provider)
+          .then((result) => {
+            // 구글 로그인 성공
+            const user = result.user;
+            console.log('구글 로그인 성공:', user.email);
+            
+            // 로그인 폼 숨기고 앱 선택 UI 표시
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+            document.querySelector('.tabs').style.display = 'none';
+            document.getElementById('app-selection').style.display = 'block';
+          })
+          .catch((error) => {
+            console.error('구글 로그인 실패:', error);
+            const errorElement = document.getElementById('login-error');
+            errorElement.textContent = '구글 로그인에 실패했습니다.';
+            errorElement.style.display = 'block';
+          });
+      });
+
+      // 회원가입
+      document.getElementById('register-button').addEventListener('click', function() {
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('register-confirm-password').value;
+        const errorElement = document.getElementById('register-error');
+        const successElement = document.getElementById('register-success');
+        
+        errorElement.style.display = 'none';
+        successElement.style.display = 'none';
+        
+        // 입력 검증
+        if (!email || !password || !confirmPassword) {
+          errorElement.textContent = '모든 필드를 입력해주세요.';
+          errorElement.style.display = 'block';
+          return;
+        }
+        
+        if (password !== confirmPassword) {
+          errorElement.textContent = '비밀번호가 일치하지 않습니다.';
+          errorElement.style.display = 'block';
+          return;
+        }
+        
+        if (password.length < 6) {
+          errorElement.textContent = '비밀번호는 최소 6자 이상이어야 합니다.';
+          errorElement.style.display = 'block';
+          return;
+        }
+        
+        // Firebase 회원가입
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            // 회원가입 성공
+            console.log('회원가입 성공:', userCredential.user.email);
+            
+            // 성공 메시지 표시
+            successElement.style.display = 'block';
+            
+            // 입력 필드 초기화
+            document.getElementById('register-email').value = '';
+            document.getElementById('register-password').value = '';
+            document.getElementById('register-confirm-password').value = '';
+            
+            // 자동으로 1초 후 로그인 탭으로 전환
+            setTimeout(function() {
+              loginTab.click();
+            }, 1500);
+          })
+          .catch((error) => {
+            console.error('회원가입 실패:', error);
+            let errorMessage = '회원가입에 실패했습니다.';
+            if (error.code === 'auth/email-already-in-use') {
+              errorMessage = '이미 사용 중인 이메일 주소입니다.';
+            } else if (error.code === 'auth/invalid-email') {
+              errorMessage = '올바르지 않은 이메일 형식입니다.';
+            } else if (error.code === 'auth/weak-password') {
+              errorMessage = '비밀번호가 너무 약합니다.';
+            }
+            errorElement.textContent = errorMessage;
+            errorElement.style.display = 'block';
+          });
+      });
+
+      // 앱 선택 후 이동 버튼 이벤트
+      document.getElementById('go-to-app').addEventListener('click', function() {
+        const selectedApp = document.getElementById('app-selector').value;
+        window.location.href = selectedApp;
+      });
+
+      // 로그아웃 버튼 이벤트
+      document.getElementById('logout-button').addEventListener('click', function() {
+        firebase.auth().signOut().then(() => {
+          console.log('로그아웃 성공');
+          // 로그인 화면으로 전환
+          document.getElementById('login-form').style.display = 'block';
+          document.getElementById('login-form').classList.add('active');
+          document.querySelector('.tabs').style.display = 'flex';
+          document.getElementById('app-selection').style.display = 'none';
+          loginTab.classList.add('active');
+          registerTab.classList.remove('active');
+          registerForm.classList.remove('active');
+        }).catch((error) => {
+          console.error('로그아웃 실패:', error);
+        });
+      });
+
+      // 로그인 상태 확인
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // 이미 로그인한 사용자인 경우 앱 선택 UI 표시
+          document.getElementById('login-form').style.display = 'none';
+          document.getElementById('register-form').style.display = 'none';
+          document.querySelector('.tabs').style.display = 'none';
+          document.getElementById('app-selection').style.display = 'block';
+        }
+      });
+    </script>
+  </body>
+</html>
