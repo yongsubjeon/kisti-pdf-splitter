@@ -67,3 +67,57 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# 가상 환경
+venv/
+env/
+ENV/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 데이터베이스
+*.db
+*.sqlite
+instance/
+
+# 업로드 및 생성된 파일들
+uploads/*.pdf
+output_sections/*.pdf
+merged/*.pdf
+figures/*.pdf
+market_dynamics/*.pdf
+south_korea/*.pdf
+market_definition/*.pdf
+market_overview/*.pdf
+market_share/*.pdf
+
+# Firebase
+.firebase/
+firebase.json
+.firebaserc
+public/
+
+# Node
+node_modules/
+package-lock.json
